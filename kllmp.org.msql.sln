@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kllmp.org.msql", "kllmp.org.msql\kllmp.org.msql.csproj", "{348E6B2A-947F-41AC-AB7F-E357C9F74089}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{348E6B2A-947F-41AC-AB7F-E357C9F74089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{348E6B2A-947F-41AC-AB7F-E357C9F74089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{348E6B2A-947F-41AC-AB7F-E357C9F74089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{348E6B2A-947F-41AC-AB7F-E357C9F74089}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {423572B3-6D61-40DE-B283-6AE87A33FBB5}
+	EndGlobalSection
+EndGlobal
