@@ -4,19 +4,22 @@ using System.Reflection;
 
 namespace kllmp.org.msql
 {
-    public class Sql
+    public class Sql : ISql
     {
         #region Properties
-        public string ConnectionString { get; set; }
-        public int CommandTimeout { get; set; }
-        public CommandType CommandType { get; set; }
+        private int _CommandTimeout = 180;
+        private string _ConnectionString = string.Empty;
+        private CommandType _CommandType = CommandType.Text;
+        
+        public int CommandTimeout { set => _CommandTimeout = value; }
+        public CommandType CommandType { set => _CommandType = value; }
+        public string ConnectionString { set => _ConnectionString = value; }
         #endregion
 
         #region Constructors
         public Sql(string ConnectionString)
         {
             this.ConnectionString = ConnectionString;
-            this.CommandTimeout = 180;
             this.CommandType = CommandType.Text;
         }
         public Sql(string server, string database, string user, string password)
@@ -34,7 +37,6 @@ namespace kllmp.org.msql
         public Sql(string ConnectionString, CommandType CommandType)
         {
             this.ConnectionString = ConnectionString;
-            this.CommandTimeout = 180;
             this.CommandType = CommandType;
         }
         public Sql(string ConnectionString, int CommandTimeout, CommandType CommandType)
@@ -55,12 +57,12 @@ namespace kllmp.org.msql
             try
             {
                 int rows;
-                using (SqlConnection db = new SqlConnection(ConnectionString))
+                using (SqlConnection db = new SqlConnection(_ConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(query, db))
                     {
-                        cmd.CommandType = CommandType;
-                        cmd.CommandTimeout = CommandTimeout;
+                        cmd.CommandType = _CommandType;
+                        cmd.CommandTimeout = _CommandTimeout;
 
                         if (parameters != null && parameters.Length > 0)
                             cmd.Parameters.AddRange(parameters);
@@ -91,12 +93,12 @@ namespace kllmp.org.msql
             try
             {
                 DataSet dataSet = new DataSet();
-                using (SqlConnection db = new SqlConnection(ConnectionString))
+                using (SqlConnection db = new SqlConnection(_ConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(query, db))
                     {
-                        cmd.CommandType = CommandType;
-                        cmd.CommandTimeout = CommandTimeout;
+                        cmd.CommandType = _CommandType;
+                        cmd.CommandTimeout = _CommandTimeout;
 
                         if (parameters != null && parameters.Length > 0)
                             cmd.Parameters.AddRange(parameters);
@@ -111,6 +113,42 @@ namespace kllmp.org.msql
                 return dataSet;
             }
             catch (SqlException ex) { throw new Exception($"SqlException: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+            catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+        }
+
+        public List<T> ExecDataList<T>(string query, SqlParameter[]? parameters = null)
+        {
+            try
+            {
+                DataTable dataTable = ExecDataTable(query, parameters);
+                List<T> list = new List<T>();
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    T item = ConvertItem<T>(row);
+                    list.Add(item);
+                }
+                return list;
+
+            }
+            catch (SqlException ex) { throw new Exception($"SqlException: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+            catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+        }
+
+        private T ConvertItem<T>(DataRow row)
+        {
+            try
+            {
+                Type type = typeof(T);
+                T item = Activator.CreateInstance<T>();
+                List<PropertyInfo> properties = type.GetProperties().ToList();
+                foreach (DataColumn column in row.Table.Columns)
+                {
+                    var property = properties.FirstOrDefault(x => x.Name.ToLower() == column.ColumnName.ToLower());
+                    if (property != null)
+                        property.SetValue(item, row[column.ColumnName].GetType() == typeof(DBNull) ? null : row[column.ColumnName], null);
+                }
+                return item;
+            }
             catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
         }
     }
