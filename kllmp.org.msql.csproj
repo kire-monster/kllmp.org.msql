@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>kire_monster</Authors>
   </PropertyGroup>
 
@@ -15,10 +15,6 @@
 	<PropertyGroup>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="licenses\LICENSE.txt" Pack="true" PackagePath="" />
-	</ItemGroup>
 	
 	<ItemGroup>
 		<Content Include="readme.md">
