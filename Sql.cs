@@ -124,7 +124,7 @@ namespace kllmp.org.msql
                 List<T> list = new List<T>();
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    T item = ConvertItem<T>(row);
+                    T item = DBRowToObject<T>(row);
                     list.Add(item);
                 }
                 return list;
@@ -134,22 +134,24 @@ namespace kllmp.org.msql
             catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
         }
 
-        private T ConvertItem<T>(DataRow row)
+        public static T DBRowToObject<T>(DataRow row)
         {
-            try
+            Type type = typeof(T);
+            T item = Activator.CreateInstance<T>();
+            List<PropertyInfo> properties = type.GetProperties().ToList();
+            foreach (DataColumn column in row.Table.Columns)
             {
-                Type type = typeof(T);
-                T item = Activator.CreateInstance<T>();
-                List<PropertyInfo> properties = type.GetProperties().ToList();
-                foreach (DataColumn column in row.Table.Columns)
-                {
-                    var property = properties.FirstOrDefault(x => x.Name.ToLower() == column.ColumnName.ToLower());
-                    if (property != null)
-                        property.SetValue(item, row[column.ColumnName].GetType() == typeof(DBNull) ? null : row[column.ColumnName], null);
-                }
-                return item;
+                var property = properties.FirstOrDefault(x => x.Name.ToLower() == column.ColumnName.ToLower());
+                if (property != null)
+                    property.SetValue(item, row[column.ColumnName].GetType() == typeof(DBNull) ? null : row[column.ColumnName], null);
             }
-            catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+            return item;
         }
+
+        public static int DBInt(object value) => !DBNull.Value.Equals(value) ? Convert.ToInt32(value) : 0;
+        public static long DBLong(object value) => !DBNull.Value.Equals(value) ? Convert.ToInt64(value) : 0L;
+        public static string DBString(object value) => !DBNull.Value.Equals(value) ? value.ToString() : string.Empty;
+        public static decimal DBDecimal(object value) => !DBNull.Value.Equals(value) ? Convert.ToDecimal(value) : 0M;
+        public static bool DBBool(object value) => !DBNull.Value.Equals(value) ? Convert.ToBoolean(value) : false;
     }
 }

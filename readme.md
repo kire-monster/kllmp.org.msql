@@ -20,6 +20,13 @@ Los metodos principales que podemos utilizar son los siquientes:
 - ExecDataTable
 - ExecDataSet
 - ExecDataList
+- DBRowToObject
+- DBInt
+- DBString
+- DBDecimal
+- DBLong
+- DBBool
+
 
 A continuacion se detalla más cada metodo
 
@@ -49,4 +56,43 @@ Ejecuta query o procedimientos, mayormente de consulta los resultados los presen
 
 ```
 List<T> ExecDataList<T>(string query, SqlParameter[]? parameters = null)
+```
+
+### Metodos de conversion
+Se añaden metodos de conversion, esto con la finalidad de hacer mas dinamica la generacion de objectos.
+
+```
+ClaseConCampos objeto = DBRowToObject<ClaseConCampos>(dataRow);
+int entero = DBInt(row["nameColumn"]);
+string cadena = DBString(row["nameColumn"]);
+decimal valorDecimal = DBDecimal(row["nameColumn"]);
+long valorLong = DBLong(row["nameColumn"]);
+bool flag = DBBool(row["nameColumn"]);
+```
+
+para el metodo DBRowToObject los atributos de la clase deben coincidir con el nombre de columnas, ignora si son mayusculas o minusculas ejemplo:
+
+```
+// un archivo prueba.cs
+class Prueba
+{
+    public int Id { get; set; }
+    public string? Nombre { get; set; }
+    public string? Fecha_Nacimiento { get; set; }
+}
+
+// la logica
+using System.Data;
+using kllmp.org.msql;
+
+const string ConnectionString = "tu cadena de conexion";
+
+var con = new Sql(ConnectionString);
+string query = "select id, nombre, fecha_nacimiento from tbl_Prueba";
+var table = con.ExecDataTable(query);
+var resultado = table
+    .AsEnumerable()
+    .Where(row => Sql.DBInt(row["id"]) == 1) // convertimos el row["id"] en tipo int
+    .Select(row => Sql.DBRowToObject<Prueba>(row)) // convertimos el DataRow en una clase
+    .First();
 ```
