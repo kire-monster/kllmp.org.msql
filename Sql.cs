@@ -152,6 +152,6 @@ namespace kllmp.org.msql
         public static long DBLong(object value) => !DBNull.Value.Equals(value) ? Convert.ToInt64(value) : 0L;
         public static string DBString(object value) => !DBNull.Value.Equals(value) ? value.ToString() : string.Empty;
         public static decimal DBDecimal(object value) => !DBNull.Value.Equals(value) ? Convert.ToDecimal(value) : 0M;
-        public static bool DBBool(object value) => !DBNull.Value.Equals(value) ? Convert.ToBoolean(value) : false;
+        public static bool DBBool(object value) => !DBNull.Value.Equals(value) && Convert.ToBoolean(value);
     }
 }
