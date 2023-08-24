@@ -8,6 +8,7 @@ namespace kllmp.org.msql
         int Exec(string query, SqlParameter[]? parameters = null);
         DataTable ExecDataTable(string query, SqlParameter[]? parameters = null);
         DataSet ExecDataSet(string query, SqlParameter[]? parameters = null);
+        SqlRecord ExecReader(string query, SqlParameter[]? parameters = null);
         List<T> ExecDataList<T>(string query, SqlParameter[]? parameters = null);
     }
 }

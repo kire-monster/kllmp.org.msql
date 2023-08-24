@@ -136,6 +136,32 @@ namespace kllmp.org.msql
             catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
         }
 
+        public SqlRecord ExecReader(string query, SqlParameter[]? parameters = null)
+        {
+            try
+            {
+                SqlRecord record;
+                SqlConnection con = new SqlConnection(_ConnectionString);
+                
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.CommandType = _CommandType;
+                    cmd.CommandTimeout = _CommandTimeout;
+
+                    if (parameters != null && parameters.Length > 0)
+                        cmd.Parameters.AddRange(parameters);
+
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    record = new SqlRecord(ref con, ref reader);
+                }
+
+                return record;
+            }
+            catch (SqlException ex) { throw new Exception($"SqlException: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+            catch (Exception ex) { throw new Exception($"Exception: {ex} At {GetMethodMain(MethodBase.GetCurrentMethod())}"); }
+        }
+
         public static T DBRowToObject<T>(DataRow row)
         {
             Type type = typeof(T);
