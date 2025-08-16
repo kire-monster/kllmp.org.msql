@@ -1,65 +1,56 @@
 # kllmp.org.msql
 
-## Descripcion
+## Descripción general
 
-Modulo que permite conectar a bases de datos SQL Server. Se puede configurar para ejecutar los querys en modo texto o procedimientos almacenados.
+La clase Sql proporciona una implementación para el acceso a datos en SQL Server, permitiendo ejecutar comandos SQL, obtener resultados en diferentes formatos y mapearlos a objetos fuertemente tipados. Incluye utilidades para configuración y mapeo eficiente de resultados.
+
 
 
 ## Constructores
 
-Se puede usar cualquiera de los siguientes constructores:
-
-- Sql(string ConnectionString)
-- Sql(string ConnectionString, int CommandTimeout)
-- Sql(string ConnectionString, CommandType CommandType)
-- Sql(string ConnectionString, int CommandTimeout, CommandType CommandType)
-
-## Metodos
-Los metodos principales que podemos utilizar son los siquientes:
-- Exec
-- ExecDataTable
-- ExecDataSet
-- ExecDataList
-- DBRowToObject
-- DBInt
-- DBString
-- DBDecimal
-- DBLong
-- DBBool
+- **Sql(string connectionString)** - Inicializa una nueva instancia con la cadena de conexión especificada.
+- **Sql(string connectionString, int commandTimeout)** - Inicializa una nueva instancia con la cadena de conexión y el tiempo de espera del comando.
+- **Sql(string connectionString, CommandType commandType)** - Inicializa una nueva instancia con la cadena de conexión y el tipo de comando.
+- **Sql(string connectionString, int commandTimeout, CommandType commandType)** - Inicializa una nueva instancia con la cadena de conexión, el tiempo de espera y el tipo de comando.
 
 
-A continuacion se detalla más cada metodo
 
-### Exec
-Permite ejecutar querys o procedimientos, generalmente de tipo insercion, actualizacion y eliminacion, como valor de retorno devueve un entero.
+## Métodos de configuración
 
-```
-int Exec(string query, SqlParameter[]? parameters = null)
-```
+- **SetConnectionString(string connectionString)** - Establece la cadena de conexión para las operaciones SQL.
+- **SetCommandType(CommandType commandType)** - Establece el tipo de comando SQL a utilizar.
+- **SetCommandTimeout(int commandTimeout)** - Establece el tiempo de espera del comando en segundos.
+- **AddCommandType(CommandType commandType)** - Permite establecer el tipo de comando y encadenar la configuración.
+- **AddCommandTimeout(int commandTimeout)** - Permite establecer el tiempo de espera y encadenar la configuración.
+- **AddSettings(string connectionString, int commandTimeout, CommandType commandType)** - Permite establecer todos los parámetros principales y encadenar la configuración.
+- **ISql Build()** - Valida la configuración y devuelve la instancia lista para usar.
 
-### ExecDataTable
-Ejecuta query o procedimientos, mayormente de consulta los resultados los presenta en DataTable.
 
-```
-DataTable ExecDataTable(string query, SqlParameter[]? parameters = null)
-```
 
-### ExecDataSet
-Ejecuta query o procedimientos, mayormente de consulta los resultados los presenta en DataSet.
+## Métodos principales
 
-```
-DataSet ExecDataSet(string query, SqlParameter[]? parameters = null)
-```
+- **int Exec(string query, SqlParameter[]? parameters = null)** - Ejecuta un comando SQL y devuelve el número de filas afectadas.
+- **DataTable ExecDataTable(string query, SqlParameter[]? parameters = null)** - Ejecuta un comando SQL y devuelve los resultados en un DataTable.
+- **DataSet ExecDataSet(string query, SqlParameter[]? parameters = null)** - Ejecuta un comando SQL y devuelve los resultados en un DataSet.
+- **List<T> ExecDataList<T>(string query, SqlParameter[]? parameters = null)** - Ejecuta un comando SQL y devuelve una lista de objetos de tipo T, mapeando las columnas a las propiedades de la clase.
+- **IEnumerable<T> LazyExecute<T>(string query, params SqlParameter[] parameters)** - Ejecuta un comando SQL y devuelve una colección enumerable de objetos de tipo T. Los resultados se leen bajo demanda (ejecución diferida).
 
-### ExecDataList
-Ejecuta query o procedimientos, mayormente de consulta los resultados los presenta en una lista de un objecto. este objeto (clase) debe tener los atributos similares a los devuetos de la consulta, para que pueda asignarlos de forma correcta.
 
-```
-List<T> ExecDataList<T>(string query, SqlParameter[]? parameters = null)
-```
+
+## Utilidades
+
+- **static T DBRowToObject<T>(DataRow row)** - Convierte un DataRow en un objeto de tipo T, mapeando columnas a propiedades.
+- **static int DBInt(object value)** - Convierte un valor a int, devolviendo 0 si es DBNull.
+- **static long DBLong(object value)** - Convierte un valor a long, devolviendo 0 si es DBNull.
+- **static string DBString(object value)** - Convierte un valor a string, devolviendo cadena vacía si es DBNull.
+- **static decimal DBDecimal(object value)** - Convierte un valor a decimal, devolviendo 0 si es DBNull.
+- **static bool DBBool(object value)** - Convierte un valor a bool, devolviendo false si es DBNull.
+
+
+
 
 ### Metodos de conversion
-Se añaden metodos de conversion, esto con la finalidad de hacer mas dinamica la generacion de objectos.
+Ejemplo para la conversion de datos.
 
 ```
 ClaseConCampos objeto = DBRowToObject<ClaseConCampos>(dataRow);
